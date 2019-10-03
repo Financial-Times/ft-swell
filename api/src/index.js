@@ -1,8 +1,7 @@
-import { typeDefs } from "./graphql-schema";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { v1 as neo4j } from "neo4j-driver";
-import { makeAugmentedSchema } from "neo4j-graphql-js";
+import { makeAugmentedSchema, inferSchema } from "neo4j-graphql-js";
 import dotenv from "dotenv";
 
 // set environment variables from ../.env
@@ -17,10 +16,6 @@ const app = express();
  * in generated queries and/or mutations. Read more in the docs:
  * https://grandstack.io/docs/neo4j-graphql-js-api.html#makeaugmentedschemaoptions-graphqlschema
  */
-
-const schema = makeAugmentedSchema({
-  typeDefs
-});
 
 /*
  * Create a Neo4j driver instance to connect to the database
@@ -41,23 +36,33 @@ const driver = neo4j.driver(
  * instance into the context object so it is available in the
  * generated resolvers to connect to the database.
  */
-const server = new ApolloServer({
-  context: { driver },
-  schema: schema,
-  introspection: true,
-  playground: true
-});
 
-// Specify port and path for GraphQL endpoint
-const port = process.env.GRAPHQL_LISTEN_PORT || 4001;
-const path = "/graphql";
+inferSchema(driver, {
+    alwaysIncludeRelationships: false
+  }).then(({typeDefs}) => {
+     const server = new ApolloServer({
+      context: { driver },
+      schema: makeAugmentedSchema({
+  typeDefs
+}),
+      introspection: true,
+      playground: true
+    });
 
-/*
-* Optionally, apply Express middleware for authentication, etc
-* This also also allows us to specify a path for the GraphQL endpoint
-*/
-server.applyMiddleware({app, path});
+    // Specify port and path for GraphQL endpoint
+    const port = process.env.GRAPHQL_LISTEN_PORT || 4001;
+    const path = "/graphql";
 
-app.listen({port, path}, () => {
-  console.log(`GraphQL server ready at http://localhost:${port}${path}`);
-});
+    /*
+    * Optionally, apply Express middleware for authentication, etc
+    * This also also allows us to specify a path for the GraphQL endpoint
+    */
+    server.applyMiddleware({app, path});
+
+    app.listen({port, path}, () => {
+      console.log(`GraphQL server ready at http://localhost:${port}${path}`);
+    });
+
+  });
+
+
