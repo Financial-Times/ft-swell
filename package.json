@@ -2,14 +2,14 @@
   "name": "grand-stack-starter-api",
   "version": "0.0.1",
   "description": "API app for GRANDstack",
-  "main": "src/index.js",
+  "main": "api/src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "./node_modules/.bin/nodemon --watch src --ext js,graphql --exec babel-node  src/index.js",
-    "build": "babel src -d build; cp .env build; cp src/schema.graphql build",
-    "now-build": "babel src -d build; cp .env build; cp src/schema.graphql build",
+    "start-dev": "./node_modules/.bin/nodemon --watch api/src --ext js,graphql --exec babel-node  api/src/index.js",
+    "build": "babel api/src -d build; cp api/.env build",
+    "now-build": "babel api/src -d build; cp api/.env build;",
     "start": "npm run build && node build/index.js",
-    "seedDb": "./node_modules/.bin/babel-node src/seed/seed-db.js"
+    "seedDb": "./node_modules/.bin/babel-node api/src/seed/seed-db.js"
   },
   "author": "William Lyon",
   "license": "MIT",

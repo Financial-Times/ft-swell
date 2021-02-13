@@ -23,10 +23,10 @@ const app = express();
  * with fallback to defaults
  */
 const driver = neo4j.driver(
-  process.env.NEO4J_URI || "bolt://localhost:7687",
+  process.env.GRAPHENEDB_BOLT_URL || "bolt://localhost:7687",
   neo4j.auth.basic(
-    process.env.NEO4J_USER || "neo4j",
-    process.env.NEO4J_PASSWORD || "neo4j"
+    process.env.GRAPHENEDB_BOLT_USER || "neo4j",
+    process.env.GRAPHENEDB_BOLT_PASSWORD || "neo4j"
   )
 );
 
@@ -50,7 +50,7 @@ inferSchema(driver, {
     });
 
     // Specify port and path for GraphQL endpoint
-    const port = process.env.GRAPHQL_LISTEN_PORT || 4001;
+    const port = process.env.PORT || 4001;
     const path = "/graphql";
 
     /*
